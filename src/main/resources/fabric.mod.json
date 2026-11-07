@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "eisnachtsort",
+  "version": "${version}",
+  "name": "EisNacht Sortieren",
+  "description": "Ein Knopf im EisNacht-Stil, der dein Inventar und Kisten sortiert.",
+  "authors": ["Claude für dich"],
+  "license": "MIT",
+  "icon": "assets/eisnachtsort/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["de.eisnacht.sort.EisNachtSort"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

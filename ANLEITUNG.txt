@@ -1,0 +1,22 @@
+EisNacht Sortieren – Mod selbst bauen (Minecraft 26.3, Fabric)
+===============================================================
+
+Du brauchst einmalig: Java 25 (JDK)
+  1. Auf https://adoptium.net gehen
+  2. "Temurin 25" (JDK) für Windows herunterladen und installieren
+     (beim Installieren "Set JAVA_HOME" mit anhaken)
+
+Mod bauen:
+  1. Diesen Ordner entpacken (Rechtsklick auf die Zip -> "Alle extrahieren")
+  2. Im Ordner doppelt auf  BAUEN.bat  klicken
+  3. Warten (beim ersten Mal ein paar Minuten)
+  4. Am Ende liegt im Ordner:  EisNacht-Sortieren-1.0.0.jar
+
+Mod benutzen:
+  - EisNacht-Sortieren-1.0.0.jar in deinen mods-Ordner vom Fabric-Profil legen
+  - Fabric API muss auch installiert sein
+  - Im Inventar und in Kisten ist rechts neben dem Fenster der EisNacht-Knopf
+  - In Kisten gibt es zwei Knöpfe: oben = Kiste sortieren, unten = dein Inventar
+  - Die Hotbar wird nicht verändert
+
+Fehler beim Bauen?  Screenshot vom schwarzen Fenster an Claude schicken.
