@@ -12,9 +12,9 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-copy /Y "build\libs\eisnacht-sort-1.0.0.jar" "EisNacht-Sortieren-1.0.0.jar" >nul
+copy /Y "build\libs\eisnacht-sort-1.1.0.jar" "EisNacht-Sortieren-1.1.0.jar" >nul
 echo.
-echo  FERTIG! Deine Mod: EisNacht-Sortieren-1.0.0.jar
+echo  FERTIG! Deine Mod: EisNacht-Sortieren-1.1.0.jar
 echo  Die kommt in deinen mods-Ordner.
 explorer "%~dp0"
 pause

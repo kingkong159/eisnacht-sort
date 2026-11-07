@@ -23,6 +23,10 @@ import java.util.Set;
 final class Sorter {
 
     private static final Set<String> CONTAINERS = Set.of("ChestMenu", "ShulkerBoxMenu", "DispenserMenu", "HopperMenu");
+    static final Comparator<ItemStack> ORDER = Comparator
+            .comparingInt((ItemStack s) -> s.getMaxStackSize() == 1 ? 0 : s.getItem() instanceof BlockItem ? 1 : 2)
+            .thenComparing(s -> BuiltInRegistries.ITEM.getKey(s.getItem()).toString())
+            .thenComparing(s -> -s.getCount());
     private static Method click;
     private static Object pickup;
 
@@ -62,10 +66,7 @@ final class Sorter {
         // 2) Gewünschte Reihenfolge berechnen
         List<ItemStack> want = new ArrayList<>();
         for (Slot s : slots) if (!s.getItem().isEmpty()) want.add(s.getItem().copy());
-        want.sort(Comparator
-                .comparingInt((ItemStack s) -> s.getMaxStackSize() == 1 ? 0 : s.getItem() instanceof BlockItem ? 1 : 2)
-                .thenComparing(s -> BuiltInRegistries.ITEM.getKey(s.getItem()).toString())
-                .thenComparing(s -> -s.getCount()));
+        want.sort(ORDER);
 
         // 3) Mit Tauschen an die richtige Stelle bringen
         for (int i = 0; i < want.size(); i++) {
@@ -81,6 +82,35 @@ final class Sorter {
         // Sicherheit: falls doch etwas in der Hand blieb, in einen leeren Platz legen
         if (!menu.getCarried().isEmpty())
             for (Slot s : slots) if (s.getItem().isEmpty()) { click(mc, menu, s); break; }
+    }
+
+    /** Kreativmodus: Items direkt neu verteilen (Kreativ darf Plätze direkt setzen). */
+    static void sortCreative() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.gameMode == null) return;
+        Inventory inv = mc.player.getInventory();
+        List<ItemStack> merged = new ArrayList<>();
+        for (int k = 9; k < 36; k++) {
+            ItemStack s = inv.getItem(k);
+            if (s.isEmpty()) continue;
+            int left = s.getCount();
+            for (ItemStack m : merged) {
+                if (left <= 0) break;
+                if (ItemStack.isSameItemSameComponents(m, s) && m.getCount() < m.getMaxStackSize()) {
+                    int add = Math.min(left, m.getMaxStackSize() - m.getCount());
+                    m.grow(add);
+                    left -= add;
+                }
+            }
+            if (left > 0) { ItemStack c = s.copy(); c.setCount(left); merged.add(c); }
+        }
+        merged.sort(ORDER);
+        for (int k = 9; k < 36; k++) {
+            int i = k - 9;
+            ItemStack s = i < merged.size() ? merged.get(i) : ItemStack.EMPTY;
+            inv.setItem(k, s.copy());
+            mc.gameMode.handleCreativeModeItemAdd(s.copy(), k);     // Platz k im Spieler-Inventar-Menü
+        }
     }
 
     private static boolean same(ItemStack a, ItemStack b) {

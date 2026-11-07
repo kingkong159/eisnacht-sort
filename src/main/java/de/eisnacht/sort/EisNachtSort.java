@@ -29,7 +29,6 @@ public class EisNachtSort implements ClientModInitializer {
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> {
             if (!(screen instanceof AbstractContainerScreen<?> cs)) return;
             String name = screen.getClass().getSimpleName();
-            if (name.contains("Creative")) return;                       // Kreativ-Inventar hat eigene Logik
 
             int left = intField(cs, "leftPos", (width - 176) / 2);
             int top = intField(cs, "topPos", (height - 166) / 2);
@@ -37,6 +36,13 @@ public class EisNachtSort implements ClientModInitializer {
             int imgH = intField(cs, "imageHeight", 166);
             int x = left + imgW + 3;
 
+            if (name.contains("Creative")) {
+                // Kreativ-Inventar: Knopf rechts oben, sortiert dein Inventar direkt (Kreativ-Regeln)
+                ImageButton inv = new ImageButton(x, top + 4, 16, 16, SPRITES, b -> Sorter.sortCreative());
+                inv.setTooltip(Tooltip.create(Component.literal("§bInventar sortieren")));
+                addWidget(screen, inv);
+                return;
+            }
             if (Sorter.hasSortableContainer(cs)) {
                 // Knopf 1: Kiste sortieren (oben), Knopf 2: eigenes Inventar (bei den Inventar-Reihen)
                 ImageButton chest = new ImageButton(x, top + 4, 16, 16, SPRITES, b -> Sorter.sort(cs, true));
