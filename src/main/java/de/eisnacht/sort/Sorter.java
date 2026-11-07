@@ -5,11 +5,11 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +27,6 @@ final class Sorter {
             .comparingInt((ItemStack s) -> s.getMaxStackSize() == 1 ? 0 : s.getItem() instanceof BlockItem ? 1 : 2)
             .thenComparing(s -> BuiltInRegistries.ITEM.getKey(s.getItem()).toString())
             .thenComparing(s -> -s.getCount());
-    private static Method click;
-    private static Object pickup;
 
     static boolean hasSortableContainer(AbstractContainerScreen<?> screen) {
         return CONTAINERS.contains(screen.getMenu().getClass().getSimpleName());
@@ -117,23 +115,8 @@ final class Sorter {
         return !a.isEmpty() && ItemStack.isSameItemSameComponents(a, b) && a.getCount() == b.getCount();
     }
 
-    /** Linksklick auf einen Platz – per Namen gesucht, damit es auch bei kleinen Änderungen in 26.x klappt. */
+    /** Linksklick auf einen Platz (direkt über Minecraft). */
     private static void click(Minecraft mc, AbstractContainerMenu menu, Slot slot) {
-        try {
-            if (click == null) {
-                for (Method m : mc.gameMode.getClass().getMethods()) {
-                    if (m.getName().equals("handleInventoryMouseClick") && m.getParameterCount() == 5) {
-                        Class<?> type = m.getParameterTypes()[3];
-                        if (type.isEnum()) for (Object c : type.getEnumConstants()) if (c.toString().equals("PICKUP")) pickup = c;
-                        click = m;
-                        break;
-                    }
-                }
-            }
-            if (click == null || pickup == null) return;
-            click.invoke(mc.gameMode, menu.containerId, slot.index, 0, pickup, mc.player);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        mc.gameMode.handleInventoryMouseClick(menu.containerId, slot.index, 0, ClickType.PICKUP, mc.player);
     }
 }
