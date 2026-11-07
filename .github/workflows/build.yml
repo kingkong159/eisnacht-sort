@@ -2,6 +2,8 @@ name: Mod bauen
 on:
   push:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,3 +21,15 @@ jobs:
         with:
           name: EisNacht-Sortieren
           path: build/libs/*.jar
+      - name: Fertige Mod in den Branch "fertig" legen
+        run: |
+          mkdir -p /tmp/out && cp build/libs/eisnacht-sort-*.jar /tmp/out/
+          rm -f /tmp/out/*-sources.jar
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan fertig
+          git rm -rf . -q
+          cp /tmp/out/*.jar .
+          git add -f *.jar
+          git commit -m "Fertige Mod"
+          git push -f origin fertig
