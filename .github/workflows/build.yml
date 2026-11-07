@@ -17,17 +17,6 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew build --stacktrace
-      - name: Minecraft-Klassen ansehen
-        if: always()
-        run: |
-          for j in $(find ~/.gradle/caches -name "*.jar" -path "*minecraft*" 2>/dev/null); do
-            if unzip -l "$j" 2>/dev/null | grep -q "net/minecraft/client/multiplayer/MultiPlayerGameMode.class"; then
-              echo "JAR: $j"
-              javap -cp "$j" -p net.minecraft.client.multiplayer.MultiPlayerGameMode | grep -i -E "click|creative|inventory" || true
-              unzip -l "$j" | grep -E "net/minecraft/world/inventory/[A-Za-z]*(Click|Input|Action)[A-Za-z]*\.class" || true
-              break
-            fi
-          done
       - uses: actions/upload-artifact@v4
         with:
           name: EisNacht-Sortieren
